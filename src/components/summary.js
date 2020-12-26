@@ -94,7 +94,8 @@ const scoreScale = scaleLinear().domain([0, 100]).range([0, 10]);
 
 const Summary = (props) => {
 
-  const account = props.account;
+  const user_account = props.account;
+  const web3Obj = props.web3Obj;
 
   const classes = useStyles();
 
@@ -125,13 +126,40 @@ const Summary = (props) => {
 
           console.log("Save User Rating to On-Chain Oracle")
           
-          //const web3 = new Web3("ws://kovan.infura.io/v3/2377373e9cc84228a6cea33645b511ea");
-          const web3 = new Web3('ws://localhost:8545')
+          //const web3 = new Web3("wss://kovan.infura.io/ws/v3/2377373e9cc84228a6cea33645b511ea");
+          const web3 = web3Obj;
+          if (!web3)
+            return;
+          //const web3 = new Web3('ws://localhost:8545')
           const abi = abis.bird;
           const address = addresses.kovan;
           const contract = new web3.eth.Contract(abi, address);
-          console.log(contract);
           
+          const sendMethod = (privateKey, encodedABI) => {
+            return new Promise((resolve, reject) => {
+              const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+              var tx = {
+                from: account.address,
+                to: address,
+                gas: 1000000,
+                data: encodedABI,
+              };
+              console.log("Calling smart contract from ", account.address);
+              const signPromise = web3.eth.accounts.signTransaction(tx, privateKey);
+              signPromise.then((signedTx) => {
+                const sentTx = web3.eth.sendSignedTransaction(signedTx.raw || signedTx.rawTransaction);
+                sentTx.on("receipt", receipt => {
+                  resolve(receipt);
+                });
+                sentTx.on("error", err => {
+                  reject(err);
+                });
+              }).catch((err) => {
+                reject(err);
+              });
+            });
+          }
+
           contract.events.UpdatedRequest((err, res) => {
             if (err === null) {
               console.log("received", res);
@@ -141,14 +169,27 @@ const Summary = (props) => {
             }
           });
 
-          let urlToQuery = 'https://www.bird.money/analytics/address/' + account;
-          let attributeToFetch = 'bird_rating';
+          // const createRequest = ({
+          //   urlToQuery,
+          //   attributeToFetch
+          // }) => {
+          //   return new Promise((resolve, reject) => {
+          //     const privateKey = private_keys[process.env.ACCOUNT_NUMBER];
+          //     var encodedABI = contract.methods.newChainRequest(urlToQuery, attributeToFetch).encodeABI();
+          //     sendMethod(privateKey, encodedABI)
+          //       .then(resolve)
+          //       .catch(reject)
+          //   });
+          // };
+
+          let urlToQuery = 'https://www.bird.money/analytics/address/' + user_account;
+          let attributeToFetch = 'nbr_transaction_count';
 
           console.log("Client", "creating a new request...");
           console.log("Client", attributeToFetch, urlToQuery);
 
           contract.methods.newChainRequest(urlToQuery, attributeToFetch).send({
-            from: account,
+            from: user_account,
             gas: 600000
           }, (err, res) => {
             if (err === null) {

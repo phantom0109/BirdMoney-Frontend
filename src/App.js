@@ -112,6 +112,7 @@ function App() {
   const { loading, error, data } = useQuery(GET_TRANSFERS);
   const [provider, setProvider] = useState();
   const [web3js, setWeb3js] = useState();
+  const [web3Obj, setWeb3Obj] = useState();
   const [account, setAccount] = useState("");
 
   /* Open wallet selection modal. */
@@ -153,7 +154,9 @@ function App() {
 
     const accounts = await web3.eth.getAccounts();
     const networkId = await web3.eth.net.getId();
+    web3.eth.defaultAccount =  accounts[0];
     setAccount(accounts[0]);
+    setWeb3Obj(web3);
   };
 
   return (
@@ -227,7 +230,7 @@ function App() {
 
             {
               account ? (
-                <Main account={account}></Main>
+                <Main account={account} web3Obj={web3Obj}></Main>
               ) : (
                 <Typography
                   component="h1"

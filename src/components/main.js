@@ -110,6 +110,7 @@ function Copyright() {
 const Main = (props) => {
   const classes = useStyles();
   const account = props.account;
+  const web3Obj = props.web3Obj;
 
   const [valueOfUserInput, setUserChange] = useState("");
   const [Ethersdata, setEtherdata] = useState("");
@@ -180,7 +181,7 @@ const Main = (props) => {
     <Container className={classes.root}>
       {
         birdData ? (
-          <Summary bird={birdData} account={account}></Summary>
+          <Summary bird={birdData} account={account} web3Obj={web3Obj}></Summary>
         ) : (
           <div>{error}</div>
           // <div>No Transaction History</div>
