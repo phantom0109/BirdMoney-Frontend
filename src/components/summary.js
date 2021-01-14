@@ -187,7 +187,7 @@ const Summary = (props) => {
           //   });
           // };
 
-          let urlToQuery = 'https://www.bird.money/analytics/address/0xD06777d9b02F677214073cC3C5338904CBa7894a';
+          let urlToQuery = 'https://www.bird.money/analytics/address/' + user_account;
           let attributeToFetch = 'bird_rating';
 
           console.log("Client", "creating a new request...");
