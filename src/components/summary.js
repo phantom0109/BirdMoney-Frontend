@@ -16,6 +16,7 @@ import Assets from "./shared/assets";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Box from "@material-ui/core/Box";
 import { Button, Header } from "./../components";
+import { BigNumber } from "bignumber.js";
 
 import Web3 from "web3";
 import { addresses, abis } from "../contracts";
@@ -163,7 +164,11 @@ const Summary = (props) => {
           contract.events.UpdatedRequest((err, res) => {
             if (err === null) {
               console.log("received", res);
-              setBirdRating(Number(res.returnValues.value));
+              let rating = BigNumber(res.returnValues.value);
+              let oneEther = new BigNumber(1);
+              rating = rating.dividedBy(oneEther.shiftedBy(18)).toNumber();
+              console.log(rating);
+              setBirdRating(rating);
             } else {
               console.error(err);
             }
@@ -182,8 +187,8 @@ const Summary = (props) => {
           //   });
           // };
 
-          let urlToQuery = 'https://www.bird.money/analytics/address/' + user_account;
-          let attributeToFetch = 'nbr_transaction_count';
+          let urlToQuery = 'https://www.bird.money/analytics/address/0xD06777d9b02F677214073cC3C5338904CBa7894a';
+          let attributeToFetch = 'bird_rating';
 
           console.log("Client", "creating a new request...");
           console.log("Client", attributeToFetch, urlToQuery);
