@@ -27,7 +27,8 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Divider from "@material-ui/core/Divider";
 import Container from "@material-ui/core/Container";
-
+import Alert from '@material-ui/lab/Alert';
+import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,9 +42,12 @@ const useStyles = makeStyles((theme) => ({
   sidebarList: {
     marginTop: theme.spacing(4),
     marginBottom: theme.spacing(4),
+    marginLeft: theme.spacing(4),
   },
   sidebar: {
-    height: "100vh",
+    height: "150vh",
+    background: "radial-gradient(circle, rgba(246,222,219,1) 16%, rgba(255,255,255,1) 74%);"
+    
   },
   marginTop: {
     marginTop: theme.spacing(8),
@@ -53,13 +57,14 @@ const useStyles = makeStyles((theme) => ({
 const theme = createMuiTheme({
   typography: {
     fontFamily: [
+      "Roboto",
       "Helvetica",
-      '"Helvetica Neue"',
+      "Helvetica Neue",
       "Arial",
       "sans-serif",
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
+      "Apple Color Emoji",
+      "Segoe UI Emoji",
+      "Segoe UI Symbol",
     ].join(","),
   },
 });
@@ -114,6 +119,7 @@ function App() {
   const [web3js, setWeb3js] = useState();
   const [web3Obj, setWeb3Obj] = useState();
   const [account, setAccount] = useState("");
+  const [testNetwork, setNetwork] = useState();
 
   /* Open wallet selection modal. */
   const loadWeb3Modal = useCallback(async () => {
@@ -157,16 +163,19 @@ function App() {
     web3.eth.defaultAccount =  accounts[0];
     setAccount(accounts[0]);
     setWeb3Obj(web3);
+    setNetwork(networkId)
+
   };
 
   return (
     <ThemeProvider theme={theme}>
       <div className={classes.root}>
         <Grid container spacing={3}>
+          
           <Grid item xs={12} sm={2}>
             <Paper className={(classes.paper, classes.sidebar)}>
               <List component="nav" aria-label="sidebar">
-                <ListItem button>
+                <ListItem button className={classes.sidebarList}>
                   <ListItemIcon>
                     {/* <InboxIcon /> */}
                     <Avatar className={classes.avatar} src={Bird}>
@@ -178,9 +187,9 @@ function App() {
 
                 <Divider />
 
-                <ListItem button className={classes.sidebarList}>
+                {/* <ListItem button className={classes.sidebarList}>
                   <ListItemText primary="Dashboard" />
-                </ListItem>
+                </ListItem> */}
 
                 <ListItem button className={classes.sidebarList}>
                   <ListItemText primary="Farm" />
@@ -198,6 +207,14 @@ function App() {
           </Grid>
 
           <Grid item xs={12} sm={10}>
+          <Alert severity="warning">Beta testing on Kovan: Contract 
+          <Link
+            target="_blank"
+            href={"https://kovan.etherscan.io/address/" + addresses.kovan}
+          >
+              ({addresses.kovan})
+          </Link>{" "}
+          </Alert>
 
             <Container className={classes.root, classes.marginTop}>
             <Grid container>
@@ -214,9 +231,11 @@ function App() {
                   Off-Chain Oracle Analytics and ID
                 </Typography>
 
-                <Typography variant="body1" color="textPrimary">
+                {/* <Typography variant="body1" color="textPrimary">
                   *You will need to hold BIRD to access some of the services below (connect a wallet with transaction history and ETH)
-                </Typography>
+                </Typography> */}
+
+
                 <br/>
               </Grid>
               <Grid item xs={2}>
@@ -229,7 +248,7 @@ function App() {
             </Container>
 
             {
-              account ? (
+              account && testNetwork == 42 ? (
                 <Main account={account} web3Obj={web3Obj}></Main>
               ) : (
                 <Typography
@@ -239,7 +258,7 @@ function App() {
                   align="center"
                 >
                   <CircularProgress />
-                  Please connect to metamask
+                  Please connect to metamask and KOVAN network
                 </Typography>
               ) // or whatever loading state you want, could be null
             }

@@ -81,7 +81,6 @@ function UpdateButton({ provider, loadWeb3Modal }) {
   return (
     <Button
       onClick={() => {
-
         console.log("Request Asset Update")
       }}
     >
@@ -90,6 +89,7 @@ function UpdateButton({ provider, loadWeb3Modal }) {
   );
 }
 
+var bird_requests = 0;
 
 const scoreScale = scaleLinear().domain([0, 100]).range([0, 10]);
 
@@ -118,91 +118,71 @@ const Summary = (props) => {
 
   // const bird_rating = scoreScale(rating);
   const [bird_rating, setBirdRating] = useState(+props.bird.bird_rating);
+  
+  const parseRating = (value) => {
+    let rating = BigNumber(value);
+    let oneEther = new BigNumber(1);
+    rating = rating.dividedBy(oneEther.shiftedBy(18)).toNumber();
+    console.log(rating);
+    setBirdRating(rating);
+  }
 
   // make on-chain request function to Oracle
   const OnChainButton = (provider, loadWeb3Modal) => {
     return (
       <Button
         onClick={() => {
-
-          console.log("Save User Rating to On-Chain Oracle")
-          
+        
           //const web3 = new Web3("wss://kovan.infura.io/ws/v3/2377373e9cc84228a6cea33645b511ea");
           const web3 = web3Obj;
           if (!web3)
             return;
-          //const web3 = new Web3('ws://localhost:8545')
           const abi = abis.bird;
           const address = addresses.kovan;
           const contract = new web3.eth.Contract(abi, address);
           
-          const sendMethod = (privateKey, encodedABI) => {
-            return new Promise((resolve, reject) => {
-              const account = web3.eth.accounts.privateKeyToAccount(privateKey);
-              var tx = {
-                from: account.address,
-                to: address,
-                gas: 1000000,
-                data: encodedABI,
-              };
-              console.log("Calling smart contract from ", account.address);
-              const signPromise = web3.eth.accounts.signTransaction(tx, privateKey);
-              signPromise.then((signedTx) => {
-                const sentTx = web3.eth.sendSignedTransaction(signedTx.raw || signedTx.rawTransaction);
-                sentTx.on("receipt", receipt => {
-                  resolve(receipt);
-                });
-                sentTx.on("error", err => {
-                  reject(err);
-                });
-              }).catch((err) => {
-                reject(err);
-              });
+          bird_requests++;
+          console.log(bird_requests + "th request...");
+          if (bird_requests == 1) {
+            contract.events.UpdatedRequest((err, res) => {
+              if (err === null) {
+                console.log("received", res);
+                parseRating(res.returnValues.value);
+              } else {
+                console.error(err);
+              }
+            });
+  
+            let urlToQuery = 'https://www.bird.money/analytics/address/' + user_account;
+            let attributeToFetch = 'bird_rating';
+            
+            console.log("Client", "creating a new request...");
+            console.log("Client", attributeToFetch, urlToQuery);
+  
+            contract.methods.newChainRequest(urlToQuery, attributeToFetch).send({
+              from: user_account,
+              gas: 600000
+            }, (err, res) => {
+              if (err === null) {
+                console.log(res);
+              } else {
+                console.error(err);
+              }
             });
           }
-
-          contract.events.UpdatedRequest((err, res) => {
-            if (err === null) {
-              console.log("received", res);
-              let rating = BigNumber(res.returnValues.value);
-              let oneEther = new BigNumber(1);
-              rating = rating.dividedBy(oneEther.shiftedBy(18)).toNumber();
-              console.log(rating);
-              setBirdRating(rating);
-            } else {
-              console.error(err);
-            }
-          });
-
-          // const createRequest = ({
-          //   urlToQuery,
-          //   attributeToFetch
-          // }) => {
-          //   return new Promise((resolve, reject) => {
-          //     const privateKey = private_keys[process.env.ACCOUNT_NUMBER];
-          //     var encodedABI = contract.methods.newChainRequest(urlToQuery, attributeToFetch).encodeABI();
-          //     sendMethod(privateKey, encodedABI)
-          //       .then(resolve)
-          //       .catch(reject)
-          //   });
-          // };
-
-          let urlToQuery = 'https://www.bird.money/analytics/address/' + user_account;
-          let attributeToFetch = 'bird_rating';
-
-          console.log("Client", "creating a new request...");
-          console.log("Client", attributeToFetch, urlToQuery);
-
-          contract.methods.newChainRequest(urlToQuery, attributeToFetch).send({
-            from: user_account,
-            gas: 600000
-          }, (err, res) => {
-            if (err === null) {
-              console.log(res);
-            } else {
-              console.error(err);
-            }
-          });
+          else {
+            contract.methods.getRatingByAddressString(user_account).call({
+              from: user_account,
+              gas: 600000
+            }, (err, res) => {
+              if (err === null) {
+                console.log("received", res);
+                parseRating(res);
+              } else {
+                console.error(err);
+              }
+            });
+          }
         }}
       >
         {!provider ? "Request Onchain Rating" : "Update Onchain Rating"}
@@ -332,6 +312,10 @@ const Summary = (props) => {
                 <Typography component="h1" variant="h5">
                   Assets
                 </Typography>
+                <Typography component="h6" >
+                * test asset data, to be updated in mainnet
+                </Typography>
+
                 <Assets></Assets>
               </Grid>
 

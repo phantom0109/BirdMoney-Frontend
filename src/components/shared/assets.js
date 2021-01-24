@@ -139,7 +139,7 @@ const data = [
 function Assets() {
   return (
     <StackedColumnChart
-      height={350}
+      height={320}
       data={data}
       title={{
         visible: false,

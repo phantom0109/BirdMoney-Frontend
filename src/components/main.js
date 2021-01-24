@@ -54,15 +54,15 @@ const useStyles = makeStyles((theme) => ({
   marginTop: {
     marginTop: theme.spacing(8),
   },
-  nodes:{
+  nodes: {
     marginTop: theme.spacing(4),
     marginBottom: theme.spacing(4),
     padding: theme.spacing(6),
-    textAlign: "center"
+    textAlign: "center",
   },
-  noPadding:{
+  noPadding: {
     padding: theme.spacing(0),
-  }
+  },
 }));
 
 function Copyright() {
@@ -142,31 +142,13 @@ const Main = (props) => {
     setUserChange(e.target.value);
   };
 
-  // TODO: load data through bird api as oppose to therscan api
-  // function loadEtherscan(address) {
-  //   const etherApi = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&apikey=${process.env.REACT_APP_ETHERSCAN_API}`;
-  //   fetch(etherApi)
-  //     .then((res) => res.json())
-  //     .then(
-  //       (result) => {
-  //         const data = result.result;
-  //         // console.log(data)
-  //         setEtherdata(data);
-  //       },
-  //       (error) => {
-  //         console.log(error);
-  //         setError(error);
-  //       }
-  //     );
-  // }
-
   function EtherBalance(address) {
     const birdApi = `https://www.bird.money/analytics/address/${address}`;
     fetch(birdApi)
       .then((res) => res.json())
       .then(
         (result) => {
-          setBirddata(result)
+          setBirddata(result);
           const balance = result.eth_balance.toFixed(4);
           setEthBalance(balance);
         },
@@ -181,80 +163,87 @@ const Main = (props) => {
     <Container className={classes.root}>
       {
         birdData ? (
-          <Summary bird={birdData} account={account} web3Obj={web3Obj}></Summary>
+          <Summary
+            bird={birdData}
+            account={account}
+            web3Obj={web3Obj}
+          ></Summary>
         ) : (
           <div>{error}</div>
           // <div>No Transaction History</div>
         ) // or whatever loading state you want, could be null
       }
 
-      <Container className={ classes.noPadding}>
-
+      <Container className={classes.noPadding}>
         <Grid className={classes.marginTop}>
           <Grid item xs={12}>
             <Typography component="h1" variant="h4">
-              Off-Chain Oracle Nodes
+              Oracle Nodes
             </Typography>
           </Grid>
 
           <Grid container spacing={3}>
-
             <Grid item xs>
-              <Paper className={classes.paper, classes.nodes}>
-
-                <Typography variant="h4" >
-                  Node 1
-                </Typography>
-                <Typography className={classes.pos} color="textSecondary">
-                  Status: <span >Active</span>
-                </Typography>
-                <Typography variant="caption" display="block" gutterBottom >
-                  Address
-                  <br />
-                  {'0x0B6A33CfbbA02159E0D87086094609C867F04E42'}
-                </Typography>
-
-              </Paper>
-            </Grid>
-            
-            <Grid item xs>
-              <Paper className={classes.paper, classes.nodes}>
-
-                <Typography variant="h4" >
-                  Node 2
-                </Typography>
+              <Paper className={(classes.paper, classes.nodes)}>
+                <Typography variant="h4">Node 1</Typography>
                 <Typography className={classes.pos} color="textSecondary">
                   Status: <span>Active</span>
                 </Typography>
-                <Typography variant="caption" display="block" gutterBottom >
+                <Typography variant="caption" display="block" gutterBottom>
                   Address
                   <br />
-                  {'0x0B6A33CfbbA02159E0D87086094609C867F04E42'}
-                </Typography>
+                  <Link
+                    target="_blank"
+                    href="https://kovan.etherscan.io/address/0x3e4897523ed7532e5ed064F1a7Cf15b6216fB14E"
+                  >
+                    0x3e4897523ed7532e5ed064F1a7Cf15b6216fB14E
+                  </Link>{" "}
 
+                </Typography>
               </Paper>
             </Grid>
-            
-            <Grid item xs>
-              <Paper className={classes.paper, classes.nodes}>
 
-                <Typography variant="h4" >
-                  Node 3
-                </Typography>
+            <Grid item xs>
+              <Paper className={(classes.paper, classes.nodes)}>
+                <Typography variant="h4">Node 2</Typography>
                 <Typography className={classes.pos} color="textSecondary">
                   Status: <span>Active</span>
                 </Typography>
-                <Typography variant="caption" display="block" gutterBottom >
+                <Typography variant="caption" display="block" gutterBottom>
                   Address
                   <br />
-                  {'0x4eC9763c0322147d8119cD8517A6f0E42EEaf540'}
-                </Typography>
 
+                  <Link
+                    target="_blank"
+                    href="https://kovan.etherscan.io/address/0x35fA8692EB10F87D17Cd27fB5488598D33B023E5"
+                  >
+                    0x35fA8692EB10F87D17Cd27fB5488598D33B023E5
+                  </Link>{" "}
+
+                </Typography>
               </Paper>
             </Grid>
-            
+
+            <Grid item xs>
+              <Paper className={(classes.paper, classes.nodes)}>
+                <Typography variant="h4">Node 3</Typography>
+                <Typography className={classes.pos} color="textSecondary">
+                  Status: <span>Active</span>
+                </Typography>
+                <Typography variant="caption" display="block" gutterBottom>
+                  Address
+                  <br />
+
+                  <Link
+                    target="_blank"
+                    href="https://kovan.etherscan.io/address/0x58Fd79D34Edc6362f92c6799eE46945113A6EA91"
+                  >
+                    0x58Fd79D34Edc6362f92c6799eE46945113A6EA91
+                  </Link>{" "}
+                </Typography>
+              </Paper>
+            </Grid>
           </Grid>
-        
         </Grid>
       </Container>
 
