@@ -6,7 +6,7 @@ import birdKovan from "./abis/bird-kovan.json";
 const abis = {
   erc20: erc20Abi,
   ownable: ownableAbi,
-  bird: birdKovan,
+  bird: birdKovan
 };
 
 export default abis;

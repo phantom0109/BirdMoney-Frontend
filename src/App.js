@@ -1,17 +1,19 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { NavLink, Route, Switch } from 'react-router-dom'
 import { Web3Provider, getDefaultProvider } from "@ethersproject/providers";
 import { Contract } from "@ethersproject/contracts";
 import { useQuery } from "@apollo/react-hooks";
 import Web3 from "web3";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
-
 import { Button, Header } from "./components";
 import { initWeb3, web3Modal, logoutOfWeb3Modal } from "./utils/web3Modal";
 import GET_TRANSFERS from "./graphql/subgraph";
 import { addresses, abis } from "./contracts";
 
+import Disclaimer from './components/ui/DisclaimerModal';
 import Main from "./components/main";
+import Farms from './views/Farms'
 
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -92,9 +94,6 @@ async function readOnChainData(account) {
 
 }
 
-
-
-
 function WalletButton({ provider, loadWeb3Modal }) {
   return (
     <Button
@@ -168,7 +167,7 @@ function App() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <div className={classes.root}>
         <Grid container spacing={3}>
           
@@ -191,11 +190,11 @@ function App() {
                   <ListItemText primary="Dashboard" />
                 </ListItem> */}
 
-                <ListItem button className={classes.sidebarList}>
+                <ListItem button className={classes.sidebarList} component={NavLink} to="/farms">
                   <ListItemText primary="Farm" />
                 </ListItem>
 
-                <ListItem button className={classes.sidebarList}>
+                <ListItem button className={classes.sidebarList} component={NavLink} to="/staking">
                   <ListItemText primary="Oracle Analytics" />
                 </ListItem>
 
@@ -207,65 +206,75 @@ function App() {
           </Grid>
 
           <Grid item xs={12} sm={10}>
-          <Alert severity="warning">Beta testing on Kovan: Contract 
-          <Link
-            target="_blank"
-            href={"https://kovan.etherscan.io/address/" + addresses.kovan}
-          >
-              ({addresses.kovan})
-          </Link>{" "}
-          </Alert>
+            <Switch>
+              <Route path="/" exact>
+                <Farms/>
+              </Route>
+              <Route path="/farms">
+                <Farms/>
+              </Route>
+              <Route path="/staking">
+                <Alert severity="warning">Beta testing on Kovan: Contract
+                  <Link
+                    target="_blank"
+                    href={"https://kovan.etherscan.io/address/" + addresses.kovan}
+                  >
+                      ({addresses.kovan})
+                  </Link>{" "}
+                </Alert>
+                <Container className={classes.root, classes.marginTop}>
+                  <Grid container>
+                    <Grid item xs={10}>
 
-            <Container className={classes.root, classes.marginTop}>
-            <Grid container>
-              <Grid item xs={10}>
+                      {/* <Button  onClick={() => readOnChainData(account)}>
+                        Read On-Chain BIRD Balance
+                      </Button> */}
 
-              {/* <Button  onClick={() => readOnChainData(account)}>
-                Read On-Chain BIRD Balance
-              </Button> */}
+                      <Typography component="h1" variant="h5">
+                        Oracle Analytics
+                      </Typography>
+                      <Typography component="h1" variant="h5">
+                        Off-Chain Oracle Analytics and ID
+                      </Typography>
 
-                <Typography component="h1" variant="h5">
-                  Oracle Analytics
-                </Typography>
-                <Typography component="h1" variant="h5">
-                  Off-Chain Oracle Analytics and ID
-                </Typography>
+                      {/* <Typography variant="body1" color="textPrimary">
+                        *You will need to hold BIRD to access some of the services below (connect a wallet with transaction history and ETH)
+                      </Typography> */}
+                      
+                      <br/>
+                      
+                    </Grid>
+                    <Grid item xs={2}>
+                      <WalletButton
+                        provider={provider}
+                        loadWeb3Modal={loadWeb3Modal}
+                      />
+                    </Grid>
+                  </Grid>
+                </Container>
+                {
+                  account && testNetwork == 42 ? (
+                    <Main account={account} web3Obj={web3Obj}></Main>
+                  ) : (
+                    <Typography
+                      component="h1"
+                      variant="h5"
+                      color="textSecondary"
+                      align="center"
+                    >
+                      <CircularProgress />
+                      Please connect to metamask and KOVAN network
+                    </Typography>
+                  ) // or whatever loading state you want, could be null
+                }
 
-                {/* <Typography variant="body1" color="textPrimary">
-                  *You will need to hold BIRD to access some of the services below (connect a wallet with transaction history and ETH)
-                </Typography> */}
-
-
-                <br/>
-              </Grid>
-              <Grid item xs={2}>
-                <WalletButton
-                  provider={provider}
-                  loadWeb3Modal={loadWeb3Modal}
-                />
-              </Grid>
-            </Grid>
-            </Container>
-
-            {
-              account && testNetwork == 42 ? (
-                <Main account={account} web3Obj={web3Obj}></Main>
-              ) : (
-                <Typography
-                  component="h1"
-                  variant="h5"
-                  color="textSecondary"
-                  align="center"
-                >
-                  <CircularProgress />
-                  Please connect to metamask and KOVAN network
-                </Typography>
-              ) // or whatever loading state you want, could be null
-            }
+              </Route>
+            </Switch>
           </Grid>
         </Grid>
       </div>
-    </ThemeProvider>
+      <Disclaimer />
+    </>
   );
 }
 
