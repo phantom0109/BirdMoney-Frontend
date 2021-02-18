@@ -40,15 +40,18 @@ export const addressMap = {
 export const contractAddresses = {
   egg: {
     1: '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2',
-    3: '0x20128d8c232F9856A6BE4b844972C726923F0331'
+    3: '0x20128d8c232F9856A6BE4b844972C726923F0331',
+    42: '0xC0674d667Ba71a1A33e8Fe6B6341132E7Fdb2ecF'
   },
   masterChef: {
     1: '0xc2edad668740f1aa35e4d8f227fb8e17dca888cd',
-    3: '0x265DaDca67c1bb56518e845073bBF9F9FEBeaAB1'
+    3: '0x265DaDca67c1bb56518e845073bBF9F9FEBeaAB1',
+    42: '0xA9Da5DD61FfDEBC89FDf6CdC62E8EeF5dB8eE029'
   },
   weth: {
     1: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-    3: '0x2fcc4dba284dcf665091718e4d0dab53a416dfe7'
+    3: '0x2fcc4dba284dcf665091718e4d0dab53a416dfe7',
+    42: '0xd0a1e359811322d97991e03f863a0c30c2cf029c'
   },
 }
 
@@ -75,9 +78,11 @@ export const supportedPools = [
     pid: 0,
     lpAddresses: {
       3: '0x09aA896D52e540F13227d717Efd21C04a52921aC',
+      42: '0x774C36dc4f5A9B6D96Ff77984628d7D3b156836b'
     },
     tokenAddresses: {
       3: '0x56704aA00Fa292A8DC713aa165306359299c92F8',
+      42: '0x66c67c9d9d570e634cd9bF36318462713d9e6363'
     },
     name: 'Aviary',
     symbol: 'BIRD-ETH UNI-V2 LP',
