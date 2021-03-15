@@ -5,6 +5,8 @@ const GaugeRate = (props) => {
   const rating = props.score;
 
   return (
+
+
     <GaugeChart
       title={{
         visible: false,
@@ -13,8 +15,8 @@ const GaugeRate = (props) => {
       height={250}
       value={rating}
       min={0}
-      max={10}
-      range={[0, 2.5, 5, 7.5, 10]}
+      max={100}
+      range={[0, 20.5, 50, 70.5, 100]}
     //   rangeStyle ={}
     //   color={["#39B8FF", "#52619B", "#43E089", "#C0EDF3"]}
       // color={["#db7b2b", "#e7b416", "#99c140", "#2dc937"]}

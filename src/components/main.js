@@ -143,7 +143,8 @@ const Main = (props) => {
   };
 
   function EtherBalance(address) {
-    const birdApi = `https://www.bird.money/analytics/address/${address}`;
+    // const birdApi = `https://www.bird.money/analytics/address/${address}`;
+    const birdApi = `https://api.birdprotocol.com/analytics/address/${address}`;
     fetch(birdApi)
       .then((res) => res.json())
       .then(
